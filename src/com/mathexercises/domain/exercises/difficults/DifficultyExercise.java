@@ -1,19 +1,20 @@
-package com.mathexercises.domain.exercises;
+package com.mathexercises.domain.exercises.difficults;
 
 import java.util.Random;
+
+import com.mathexercises.singleton.RandomSingleton;
 
 public abstract class DifficultyExercise {
 	protected Random random;
 	protected String name;
 	protected int iterationsNumber;
-	
-	public DifficultyExercise(
-		Random random, 
+
+	public DifficultyExercise( 
 		String name, 
 		int iterationsNumber
 	) {
 		super();
-		this.random = random;
+		this.random = RandomSingleton.inject();
 		this.name = name;
 		this.iterationsNumber = iterationsNumber;
 	}

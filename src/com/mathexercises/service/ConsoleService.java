@@ -7,13 +7,15 @@ import com.mathexercises.utils.NumberConverter;
 
 public class ConsoleService {
 	 private Scanner scanner;
-	 private final int standartWidth = 50;
+	 private final int standartWidth = 80;
 
 	 public ConsoleService(Scanner scanner) {
 		 this.scanner = scanner;
 	 }
 
-	 public void newLine() { System.out.println(); }
+	 public void newLine() { 
+		 System.out.println(); 
+	 }
 	    
 	 public void line() {
 	     System.out.println("-".repeat(this.standartWidth));
@@ -22,7 +24,9 @@ public class ConsoleService {
 	 public void title(String msg) {
 		 newLine();
 		 line();
+		 newLine();
 	     showCentered(msg.toUpperCase(), this.standartWidth);
+	     newLine();
 	     line();
 	}
 	    
