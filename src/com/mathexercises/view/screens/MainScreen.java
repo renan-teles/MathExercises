@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.mathexercises.dto.responsewhile.ResponseToWhile;
 import com.mathexercises.dto.responsewhile.ResponseWhile;
 import com.mathexercises.service.ConsoleService;
+import com.mathexercises.singleton.ConsoleServiceSingleton;
 
 public class MainScreen implements Screen{
 	protected String title;	
@@ -15,19 +16,18 @@ public class MainScreen implements Screen{
 
 	public MainScreen(
 		String title, 
-		Map<Integer, Screen> childrens,
-		ConsoleService console
+		Map<Integer, Screen> childrens
 	) {
 		super();
 		this.title = title.toUpperCase();
-		this.console = console;
 		this.childrens = childrens;
+		this.console = ConsoleServiceSingleton.inject();
 	}
 	
-	protected MainScreen(String title, ConsoleService console) {
+	protected MainScreen(String title) {
 		super();
-		this.console = console;
 		this.title = title;
+		this.console = ConsoleServiceSingleton.inject();
 	}
 
 	@Override

@@ -1,24 +1,29 @@
 package com.mathexercises.domain.exercises;
 
+import com.mathexercises.domain.exercises.difficults.DifficultyExercise;
 import com.mathexercises.dto.responsewhile.ResponseWhile;
+import com.mathexercises.management.MathExpressionManagement;
 import com.mathexercises.service.ConsoleService;
+import com.mathexercises.singleton.ConsoleServiceSingleton;
 
 public abstract class MathExercise {
 	protected String name;
 	protected String description;
 	protected DifficultyExercise difficulty;
-	protected ConsoleService console;
 	protected String EXIT = "exit";
 	
+	protected MathExpressionManagement expression;
+	protected ConsoleService console;
+
 	public MathExercise(
 		String name, 
-		String description, 
-		ConsoleService console
+		String description
 	) {
 		super();
 		this.name = name.toUpperCase();
 		this.description = this.capitalize(description);
-		this.console = console;
+		this.console = ConsoleServiceSingleton.inject();
+		this.expression = new MathExpressionManagement();
 	}
 
 	public final void execute() {
@@ -49,6 +54,10 @@ public abstract class MathExercise {
 		this.console.newLine();
 		this.console.topic("Digite '" + this.EXIT + "' para sair.");
 		this.console.newLine();
+	}
+	
+	public void setQuantityNumbers(int quantity) {
+		this.expression.setQuantityNumbers(quantity);
 	}
 
 	public void setDifficulty(DifficultyExercise difficulty) {
