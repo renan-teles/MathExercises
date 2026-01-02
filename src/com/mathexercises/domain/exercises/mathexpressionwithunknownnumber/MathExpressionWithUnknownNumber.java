@@ -1,20 +1,22 @@
 package com.mathexercises.domain.exercises.mathexpressionwithunknownnumber;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-import com.mathexercises.domain.exercises.MathExercise;
-import com.mathexercises.dto.responsewhile.ResponseToWhile;
-import com.mathexercises.dto.responsewhile.ResponseWhile;
+import com.mathexercises.domain.exercises.AbstractMathExercise;
+import com.mathexercises.domain.math.operations.MathOperation;
+import com.mathexercises.dto.responsewhile.*;
 import com.mathexercises.singleton.RandomSingleton;
 import com.mathexercises.utils.NumberConverter;
 
-public class MathExpressionWithUnknownNumber extends MathExercise{
-	private Integer randomNumber = null;
-	private List<MathOperation> operations;
+public class MathExpressionWithUnknownNumber extends AbstractMathExercise{
+	private final Random random = RandomSingleton.inject();
+	private final List<MathOperation> operations;
+
+	private Integer randomNumber = null, position = null;
 	private MathOperation currentOperation = null;
-	private Random random;
 	
 	public MathExpressionWithUnknownNumber(
 		List<MathOperation> operations
@@ -24,36 +26,37 @@ public class MathExpressionWithUnknownNumber extends MathExercise{
 			"Descubra o número desconhecido da expressão"
 		);
 		this.operations = operations;
-		this.random = RandomSingleton.inject();
 	}
-	
+		
 	@Override
 	protected ResponseWhile exerciseLogic() {
 		this.defineRandomNumber();
 		this.defineRandomOperation();
-		
-		this.expression.defineNumbers(this.difficulty, false);
-		int position = this.expression.addNumberInRandomPosition(this.randomNumber);
-		this.expression.generateExpression(this.currentOperation.getSymbol(), position);	
-		
+		this.defineExpression();
+
 		this.currentOperation.calculateResult(this.expression);
+		this.console.message(
+			new StringBuilder()
+				.append(this.expression.getExpression())
+				.append(" = ")
+				.append(this.expression.getResult())
+				.toString()
+		);
 		
-		StringBuilder sb = new StringBuilder();
-		sb.append(this.expression.getExpression());
-		sb.append(" = ");
-		sb.append(this.expression.getResult());
-		this.console.message(sb.toString());
-		
-		Optional<String> userEntry = this.console.inputString("Qual o número desconhecido (?)");
+		Optional<String> userEntry = this.console.inputString(
+			"Qual o número desconhecido (?)"
+		);
 		if(userEntry.isEmpty()) {
 			return ResponseToWhile.repeat();
 		}
-		if(userEntry.get().equalsIgnoreCase(super.EXIT)) {
+		else if(userEntry.get().equalsIgnoreCase(super.EXIT)) {
 			this.reset();
 			return ResponseToWhile.exit();
 		}
 		
-		Optional<Integer> optRes = NumberConverter.parseStringToInt(userEntry.get());
+		Optional<Integer> optRes = NumberConverter.parseStringToInt(
+			userEntry.get()
+		);
 		if(optRes.isEmpty()) {
 			this.console.alert("Valor inválido. Tente novamente.");
 			return ResponseToWhile.repeat();
@@ -64,9 +67,22 @@ public class MathExpressionWithUnknownNumber extends MathExercise{
 			return ResponseToWhile.repeat();
 		}
 		super.console.success("VOCÊ ACERTOU!");
-		this.reset();
 		
+		this.reset();
 		return ResponseToWhile.nextIteration();
+	}
+	
+	private void defineExpression() {
+		if(this.position != null) return;
+		
+		this.position = this.expression.defineNumbers(
+			this.difficulty, 
+			BigDecimal.valueOf(this.randomNumber)
+		);
+		this.expression.generateExpression(
+			this.currentOperation.operation(), 
+			this.position
+		);	
 	}
 	
 	private void defineRandomNumber() {
@@ -84,5 +100,6 @@ public class MathExpressionWithUnknownNumber extends MathExercise{
 		this.expression.clearExpression();
 		this.randomNumber = null;
 		this.currentOperation = null;
+		this.position = null;
 	}
 }

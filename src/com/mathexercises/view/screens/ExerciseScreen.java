@@ -3,20 +3,18 @@ package com.mathexercises.view.screens;
 import java.util.Map;
 import java.util.Optional;
 
-import com.mathexercises.domain.exercises.MathExercise;
-import com.mathexercises.domain.exercises.difficults.DifficultyExercise;
-import com.mathexercises.dto.responsewhile.ResponseToWhile;
-import com.mathexercises.dto.responsewhile.ResponseWhile;
+import com.mathexercises.domain.exercises.*;
+import com.mathexercises.domain.exercises.difficults.Difficulty;
+import com.mathexercises.dto.responsewhile.*;
 
 public class ExerciseScreen extends MainScreen{
-	protected MathExercise exercise;
-	protected Map<Integer, DifficultyExercise> difficults;
-	protected DifficultyExercise selectedDifficulty;
-	protected int selectedQuantityRandomNumbers;
+	protected final MathExercise exercise;
+	protected final Map<Integer, Difficulty> difficults;
+	protected Difficulty difficulty;
 	
 	public ExerciseScreen(
 		MathExercise exercise, 
-		Map<Integer, DifficultyExercise> difficults
+		Map<Integer, Difficulty> difficults
 	) {
 		super(exercise.getName());
 		this.exercise = exercise;
@@ -31,7 +29,7 @@ public class ExerciseScreen extends MainScreen{
 			"PREFERÊNCIAS PARA O EXERCÍCIO - " + super.title
 		);
 		super.console.subtopic(
-			"Selecione a DIFICULDADE e a QUANTIDADE DE NÚMEROS"
+			"Selecione a DIFICULDADE"
 		);
 		super.console.newLine();
 	}
@@ -45,12 +43,10 @@ public class ExerciseScreen extends MainScreen{
 			if(res.repeat()) continue;
 			else if(res.exit()) break;
 			
-			res = this.selectQuantityRandomNumbers();
-			if(res.repeat()) continue;
-			else if(res.exit()) break;
-			
-			this.exercise.setQuantityNumbers(this.selectedQuantityRandomNumbers);
-			this.exercise.setDifficulty(this.selectedDifficulty);
+			this.exercise.setQuantityNumbers(
+				this.difficulty.getQuantityNumbers()
+			);
+			this.exercise.setDifficulty(this.difficulty);
 			this.exercise.execute();
 			
 			break;
@@ -68,10 +64,12 @@ public class ExerciseScreen extends MainScreen{
 		this.console.message("0 - Sair/Voltar");
 	}
 	
-	protected ResponseWhile selectDifficulty() {
+	protected final ResponseWhile selectDifficulty() {
 		this.showDifficults();
 		
-		Optional<Integer> userEntry = this.console.inputInteger("Escolha");
+		Optional<Integer> userEntry = this.console.inputInteger(
+			"Escolha"
+		);
 		if(userEntry.isEmpty()) {
 			return ResponseToWhile.repeat();
 		}	
@@ -81,33 +79,21 @@ public class ExerciseScreen extends MainScreen{
 		}
 		
 		if(!this.difficults.containsKey(selected)) {
-			this.console.alert("Escolha '" + selected + "' inválida. Tente novamente.");
+			this.console.alert(
+				new StringBuilder()
+					.append("Escolha '")
+					.append(selected)
+					.append("' inválida. Tente novamente.")
+					.toString()
+			);
 			return ResponseToWhile.repeat();
 		}
-		this.selectedDifficulty = this.difficults.get(selected);
+		this.difficulty = this.difficults.get(selected);
 		
 		return ResponseToWhile.nextIteration();
 	}
 	
-	protected ResponseWhile selectQuantityRandomNumbers() {
-		Optional<Integer> userEntry = this.console.inputInteger("Q. de Números");
-		if(userEntry.isEmpty()) {
-			return ResponseToWhile.repeat();
-		}
-		int selected = userEntry.get();
-		if(selected == 0) {
-			return ResponseToWhile.exit();
-		}
-		if(selected < 2 || selected >= 11) {
-			this.console.alert("Quantidade de números inválida.");
-			return ResponseToWhile.repeat();
-		}
-		
-		this.selectedQuantityRandomNumbers = selected;
-		return ResponseToWhile.nextIteration();
-	}
-	
-	private void validateDifficults(Map<Integer, DifficultyExercise> difficults) {
+	protected final void validateDifficults(Map<Integer, Difficulty> difficults) {
 		if(!difficults.isEmpty()) return;
 		throw new IllegalArgumentException(
 			"Dificuldades não definidas para exercício matemático."

@@ -4,28 +4,28 @@ import java.util.Random;
 
 import com.mathexercises.singleton.RandomSingleton;
 
-public abstract class DifficultyExercise {
-	protected Random random;
+public abstract class AbstractDifficulty implements Difficulty{
+	protected final Random random = RandomSingleton.inject();
+	
 	protected String name;
 	protected int iterationsNumber;
 
-	public DifficultyExercise( 
+	public AbstractDifficulty( 
 		String name, 
 		int iterationsNumber
 	) {
 		super();
-		this.random = RandomSingleton.inject();
 		this.name = name;
 		this.iterationsNumber = iterationsNumber;
 	}
 
-	public abstract int getRandomNumber();
-
+	@Override
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
+	@Override
 	public int getIterationsNumber() {
-		return iterationsNumber;
+		return this.iterationsNumber;
 	}
-}
+}       

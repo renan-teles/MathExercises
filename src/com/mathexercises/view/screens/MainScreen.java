@@ -3,8 +3,7 @@ package com.mathexercises.view.screens;
 import java.util.Map;
 import java.util.Optional;
 
-import com.mathexercises.dto.responsewhile.ResponseToWhile;
-import com.mathexercises.dto.responsewhile.ResponseWhile;
+import com.mathexercises.dto.responsewhile.*;
 import com.mathexercises.service.ConsoleService;
 import com.mathexercises.singleton.ConsoleServiceSingleton;
 
@@ -46,14 +45,22 @@ public class MainScreen implements Screen{
 		
 		if(!this.childrens.isEmpty()) {
 			this.childrens.forEach((k,s) -> {
-				this.console.message(k + " - " + s.getTitle());
+				this.console.message(
+					new StringBuilder()
+						.append(k)
+						.append(" - ")
+						.append(s.getTitle())
+						.toString()
+				);
 			});
 		}
 		this.console.message("0 - Sair/Voltar");
 	}
 	
 	protected ResponseWhile bodyScreen() {
-		Optional<Integer> userEntry = this.console.inputInteger("Escolha");
+		Optional<Integer> userEntry = this.console.inputInteger(
+			"Escolha"
+		);
 		if(userEntry.isEmpty()) {
 			return ResponseToWhile.repeat();
 		}	
@@ -64,7 +71,13 @@ public class MainScreen implements Screen{
 		}
 		
 		if(!this.childrens.containsKey(selected)) {
-			this.console.alert("Escolha '" + selected + "' inválida. Tente novamente.");
+			this.console.alert(
+				new StringBuilder()
+					.append("Escolha '")
+					.append(selected)
+					.append("' inválida. Tente novamente.")
+					.toString()
+			);
 			return ResponseToWhile.repeat();
 		}
 		this.childrens.get(selected).render();

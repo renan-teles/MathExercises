@@ -1,48 +1,53 @@
 package com.mathexercises.domain.exercises.basicmathoperations;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
-import com.mathexercises.domain.exercises.MathExercise;
-import com.mathexercises.dto.responsewhile.ResponseToWhile;
-import com.mathexercises.dto.responsewhile.ResponseWhile;
+import com.mathexercises.domain.exercises.AbstractMathExercise;
+import com.mathexercises.domain.math.operations.Operation;
+import com.mathexercises.dto.responsewhile.*;
 import com.mathexercises.utils.NumberConverter;
 
-public abstract class BasicMathOperation extends MathExercise{
-	protected char symbol;
+public abstract class BasicMathOperation extends AbstractMathExercise{
+	protected final Operation operation;
 	
 	public BasicMathOperation(
 		String name, 
-		String description, 
-		char symbol
+		String description,
+		Operation operation
 	) {
 		super(name, description);
-		this.symbol = symbol;
+		this.operation = operation;
 	}
 	
 	@Override
-	protected final ResponseWhile exerciseLogic() {
-		super.expression.defineNumbers(this.difficulty, true);
-		super.expression.generateExpression(this.symbol);
+	protected ResponseWhile exerciseLogic() {
+		super.expression.defineNumbers(this.difficulty);
+		super.expression.generateExpression(this.operation);
 		
 		this.console.message(this.expression.getExpression());
 
-		Optional<String> userEntry = this.console.inputString("Resultado");
+		Optional<String> userEntry = this.console.inputString(
+			"Resultado"
+		);
 		if(userEntry.isEmpty()) {
 			return ResponseToWhile.repeat();
 		}
-		if(userEntry.get().equalsIgnoreCase(super.EXIT)) {
+		else if(userEntry.get().equalsIgnoreCase(super.EXIT)) {
 			this.expression.clearExpression();
 			return ResponseToWhile.exit();
 		}
 		
-		Optional<Integer> optRes = NumberConverter.parseStringToInt(userEntry.get());
+		Optional<Double> optRes = NumberConverter.parseStringToDouble(
+			userEntry.get()
+		);
 		if(optRes.isEmpty()) {
 			this.console.alert("Valor inválido. Tente novamente.");
 			return ResponseToWhile.repeat();
 		}
 		
 		this.calculateResult();
-		if(!this.expression.isCorrect(optRes.get())) {
+		if(!this.expression.isCorrect(BigDecimal.valueOf(optRes.get()))) {
 			super.console.unsuccess("Você errou. Tente novamente.");
 			return ResponseToWhile.repeat();
 		}
@@ -52,5 +57,7 @@ public abstract class BasicMathOperation extends MathExercise{
 		return ResponseToWhile.nextIteration();
 	}
 	
-	protected abstract void calculateResult();
+	protected final void calculateResult() {
+		super.expression.calculate(this.operation);
+	}
 }
