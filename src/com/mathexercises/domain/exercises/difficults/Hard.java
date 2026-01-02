@@ -1,6 +1,6 @@
 package com.mathexercises.domain.exercises.difficults;
 
-public class Hard extends DifficultyExercise{
+public class Hard extends AbstractDifficulty{
 	public Hard() {
 		super("DIFÍCIL", 10);
 	}
