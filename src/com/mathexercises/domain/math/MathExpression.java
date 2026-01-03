@@ -1,6 +1,7 @@
 package com.mathexercises.domain.math;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,7 +16,7 @@ public class MathExpression {
     private final MathExpressionBuilder builder = new MathExpressionBuilder();
     private final Random random = RandomSingleton.inject();
 
-    private BigDecimal result;
+    private BigDecimal result = null;
     private int quantityNumbers = 2;
 
     public String getExpression() {
@@ -26,6 +27,10 @@ public class MathExpression {
         return this.result;
     }
 
+    public int getQuantityNumbers() {
+    	return this.quantityNumbers;
+    }
+    
     public void setQuantityNumbers(int quantity) {
     	if(quantity >= 2 && quantity <= 10) {
     		this.quantityNumbers = quantity;
@@ -37,7 +42,7 @@ public class MathExpression {
     }
 
     public boolean isCorrect(BigDecimal value) {
-        return value.compareTo(result) == 0;
+        return value.compareTo(this.result) == 0;
     }
 
     public void clearExpression() {
@@ -46,8 +51,9 @@ public class MathExpression {
         this.result = null;
     }
 
-    public void addNumber(BigDecimal n) {
+    public MathExpression addNumber(BigDecimal n) {
         this.numbers.add(n);
+        return this;
     }
 
     public int addNumberInRandomPosition(BigDecimal n) {
@@ -56,8 +62,9 @@ public class MathExpression {
         return index;
     }
     
-    public void defineNumbers(Difficulty difficulty) {
+    public MathExpression defineNumbers(Difficulty difficulty) {
     	this.defineNumbers(difficulty, true);
+    	return this;
     }
     
     public int defineNumbers(Difficulty difficulty, BigDecimal number) {
@@ -65,22 +72,32 @@ public class MathExpression {
     	return this.addNumberInRandomPosition(number);
     }
 
-    public void generateExpression(Operation operation) {
+    public MathExpression generateExpression(Operation operation) {
         this.validateNumbers();
         builder.buildExpression(numbers, operation.symbol());
+        return this;
+    }
+    
+    public MathExpression generateExpression(char symbol) {
+        this.validateNumbers();
+        builder.buildExpression(numbers, symbol);
+        return this;
     }
 
-    public void generateExpression(Operation operation, int maskNumberPosition) {
+    public MathExpression generateExpression(
+    	Operation operation, int maskNumberPosition
+    ) {
         this.validateNumbers();
         this.builder.buildExpression(
         	numbers, 
         	operation.symbol(), 
         	maskNumberPosition
         );
+        return this;
     }
 
-    public void calculate(Operation operation) {
-        if(this.resultIsSet()) return;
+    public MathExpression calculate(Operation operation) {
+        if(this.resultIsSet()) return this;
     	this.validateNumbers();
 
         this.result = this.numbers.stream()
@@ -89,6 +106,23 @@ public class MathExpression {
             		"Falha ao realizar operação matemática."
             	)
             );
+        
+        return this;
+    }
+    
+    public MathExpression avg() {
+    	 if(this.resultIsSet()) return this;
+    	  
+    	this.result 
+    		= this.calculate(Operation.SUM)
+    			.getResult()
+    			.divide(
+    				BigDecimal.valueOf(this.quantityNumbers), 
+    				2, 
+    				RoundingMode.HALF_UP
+    			);
+    	
+    	return this;
     }
     
     private boolean resultIsSet() {

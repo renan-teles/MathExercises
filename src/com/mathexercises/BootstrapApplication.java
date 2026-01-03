@@ -8,11 +8,9 @@ import java.util.Map;
 import com.mathexercises.domain.exercises.basicmathoperations.*;
 import com.mathexercises.domain.exercises.difficults.*;
 import com.mathexercises.domain.exercises.*;
+import com.mathexercises.domain.exercises.averageofnumbers.*;
 import com.mathexercises.domain.exercises.mathexpressionwithunknownnumber.*;
-import com.mathexercises.domain.math.operations.MathOperation;
-import com.mathexercises.domain.math.operations.MultiplicationMathOperation;
-import com.mathexercises.domain.math.operations.SubtractionMathOperation;
-import com.mathexercises.domain.math.operations.SumMathOperation;
+import com.mathexercises.domain.math.operations.*;
 import com.mathexercises.view.screens.*;
 
 public class BootstrapApplication {
@@ -27,7 +25,7 @@ public class BootstrapApplication {
 		MathExercise subtraction = new SubtractionOfNumbers();
 		MathExercise multiplication = new MultiplicationOfNumbers();
 		MathExercise division = new DivisionOfNumbers();
-		
+	
 		//Math Expression With Unknown Number
 		List<MathOperation> operations = new ArrayList<>();
 		operations.add(new SumMathOperation());
@@ -36,6 +34,9 @@ public class BootstrapApplication {
 		MathExercise expressionWithUnknownNumber = new MathExpressionWithUnknownNumber(
 			operations
 		);
+		
+		//Average Of Numbers
+		MathExercise avg = new AverageOfNumbers();
 		
 		
 		//DIFFICULTS
@@ -62,15 +63,20 @@ public class BootstrapApplication {
 		Screen divisionScreen = new ExerciseScreen(
 			division, normalDifficults
 		); 
-	
+		
 		//Math Expression With Unknown Number
 		difficultsWithQuantityNumbers = new HashMap<>();
 		difficultsWithQuantityNumbers.put(1, new DifficultyWithQuantityNumbers(easy, 2));
-		difficultsWithQuantityNumbers.put(2, new DifficultyWithQuantityNumbers(normal, 2));
+		difficultsWithQuantityNumbers.put(2, new DifficultyWithQuantityNumbers(normal, 3));
 		difficultsWithQuantityNumbers.put(3, new DifficultyWithQuantityNumbers(hard, 3));
 		Screen expressionWithUnknownNumberScreen = new ExerciseScreen(
 			expressionWithUnknownNumber, difficultsWithQuantityNumbers
 		);
+		
+		//Average Of Numbers
+		Screen avgScreen = new ExerciseWithSelectQuantityNumbersScreen(
+			avg, normalDifficults
+		); 
 		
 		
 		//MAIN SCREENS
@@ -81,6 +87,7 @@ public class BootstrapApplication {
 		childrenScreens.put(3, multiplicationScreen);
 		childrenScreens.put(4, divisionScreen);
 		childrenScreens.put(5, expressionWithUnknownNumberScreen);
+		childrenScreens.put(6, avgScreen);
 		Screen selectMathExerciseScreen = new MainScreen(
 			"ESCOLHER EXERCÍCIO MATEMÁTICO", childrenScreens	
 		);

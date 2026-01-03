@@ -40,8 +40,8 @@ public class ExerciseScreen extends MainScreen{
 			ResponseWhile res;
 			
 			res = this.selectDifficulty();
-			if(res.repeat()) continue;
-			else if(res.exit()) break;
+			if(res.repeatCurrentIteration()) continue;
+			else if(res.breakLoop()) break;
 			
 			this.exercise.setQuantityNumbers(
 				this.difficulty.getQuantityNumbers()
@@ -52,7 +52,7 @@ public class ExerciseScreen extends MainScreen{
 			break;
 		}
 		
-		return ResponseToWhile.exit();
+		return ResponseToWhile.exitLoop();
 	}
 	
 	protected final void showDifficults() {
@@ -71,11 +71,11 @@ public class ExerciseScreen extends MainScreen{
 			"Escolha"
 		);
 		if(userEntry.isEmpty()) {
-			return ResponseToWhile.repeat();
+			return ResponseToWhile.repeatCurrentIteration();
 		}	
 		int selected = userEntry.get();
 		if(selected == 0) {
-			return ResponseToWhile.exit();
+			return ResponseToWhile.exitLoop();
 		}
 		
 		if(!this.difficults.containsKey(selected)) {
@@ -86,7 +86,7 @@ public class ExerciseScreen extends MainScreen{
 					.append("' inválida. Tente novamente.")
 					.toString()
 			);
-			return ResponseToWhile.repeat();
+			return ResponseToWhile.repeatCurrentIteration();
 		}
 		this.difficulty = this.difficults.get(selected);
 		

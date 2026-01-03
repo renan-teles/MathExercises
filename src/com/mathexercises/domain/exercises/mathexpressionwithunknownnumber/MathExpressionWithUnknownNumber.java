@@ -2,14 +2,13 @@ package com.mathexercises.domain.exercises.mathexpressionwithunknownnumber;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 import com.mathexercises.domain.exercises.AbstractMathExercise;
 import com.mathexercises.domain.math.operations.MathOperation;
-import com.mathexercises.dto.responsewhile.*;
+import com.mathexercises.dto.responseexerciselogic.ResponseExerciseLogic;
+import com.mathexercises.dto.responseexerciselogic.ResponseToExerciseLogic;
 import com.mathexercises.singleton.RandomSingleton;
-import com.mathexercises.utils.NumberConverter;
 
 public class MathExpressionWithUnknownNumber extends AbstractMathExercise{
 	private final Random random = RandomSingleton.inject();
@@ -23,16 +22,17 @@ public class MathExpressionWithUnknownNumber extends AbstractMathExercise{
 	) {
 		super(
 			"EXPRESSÃO MATEMÁTICA COM NÚMERO DESCONHECIDO", 
-			"Descubra o número desconhecido da expressão"
+			"Descubra o número desconhecido da expressão",
+			"Qual o número desconhecido (?)"
 		);
 		this.operations = operations;
 	}
-		
+	
 	@Override
-	protected ResponseWhile exerciseLogic() {
+	protected final void defineExpression() {
 		this.defineRandomNumber();
 		this.defineRandomOperation();
-		this.defineExpression();
+		this.setExpression();
 
 		this.currentOperation.calculateResult(this.expression);
 		this.console.message(
@@ -42,44 +42,28 @@ public class MathExpressionWithUnknownNumber extends AbstractMathExercise{
 				.append(this.expression.getResult())
 				.toString()
 		);
-		
-		Optional<String> userEntry = this.console.inputString(
-			"Qual o número desconhecido (?)"
-		);
-		if(userEntry.isEmpty()) {
-			return ResponseToWhile.repeat();
-		}
-		else if(userEntry.get().equalsIgnoreCase(super.EXIT)) {
-			this.reset();
-			return ResponseToWhile.exit();
-		}
-		
-		Optional<Integer> optRes = NumberConverter.parseStringToInt(
-			userEntry.get()
-		);
-		if(optRes.isEmpty()) {
-			this.console.alert("Valor inválido. Tente novamente.");
-			return ResponseToWhile.repeat();
-		}
-		
-		if(optRes.get() != this.randomNumber) {
-			super.console.unsuccess("Você errou. Tente novamente.");
-			return ResponseToWhile.repeat();
-		}
-		super.console.success("VOCÊ ACERTOU!");
-		
-		this.reset();
-		return ResponseToWhile.nextIteration();
 	}
 	
-	private void defineExpression() {
+	@Override
+	protected final ResponseExerciseLogic<Void> checkIsCorrect(BigDecimal value){
+		if(value.compareTo(BigDecimal.valueOf(this.randomNumber)) != 0) {
+			super.console.unsuccess("Você errou. Tente novamente.");
+			return ResponseToExerciseLogic.repeatRound();
+		}
+		
+		super.console.success("VOCÊ ACERTOU!");
+		this.reset();
+		return ResponseToExerciseLogic.nextRound();
+	}
+	
+	private void setExpression() {
 		if(this.position != null) return;
 		
 		this.position = this.expression.defineNumbers(
 			this.difficulty, 
 			BigDecimal.valueOf(this.randomNumber)
 		);
-		this.expression.generateExpression(
+		super.expression.generateExpression(
 			this.currentOperation.operation(), 
 			this.position
 		);	
