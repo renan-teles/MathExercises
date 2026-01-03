@@ -34,12 +34,12 @@ public class ExerciseWithSelectQuantityNumbersScreen extends ExerciseScreen{
 			ResponseWhile res;
 			
 			res = this.selectDifficulty();
-			if(res.repeat()) continue;
-			else if(res.exit()) break;
+			if(res.repeatCurrentIteration()) continue;
+			else if(res.breakLoop()) break;
 			
 			res = this.selectQuantityNumbers();
-			if(res.repeat()) continue;
-			else if(res.exit()) break;
+			if(res.repeatCurrentIteration()) continue;
+			else if(res.breakLoop()) break;
 			
 			this.exercise.setQuantityNumbers(this.quantityNumbers);
 			this.exercise.setDifficulty(this.difficulty);
@@ -48,22 +48,22 @@ public class ExerciseWithSelectQuantityNumbersScreen extends ExerciseScreen{
 			break;
 		}
 		
-		return ResponseToWhile.exit();
+		return ResponseToWhile.exitLoop();
 	}
 	
 	protected ResponseWhile selectQuantityNumbers() {
 		Optional<Integer> userEntry = this.console.inputInteger("Q. de Números");
 		if(userEntry.isEmpty()) {
-			return ResponseToWhile.repeat();
+			return ResponseToWhile.repeatCurrentIteration();
 		}
 		
 		int selected = userEntry.get();
 		if(selected == 0) {
-			return ResponseToWhile.exit();
+			return ResponseToWhile.exitLoop();
 		}
 		else if(selected < 2 || selected >= 11) {
 			this.console.alert("Quantidade de números inválida.");
-			return ResponseToWhile.repeat();
+			return ResponseToWhile.repeatCurrentIteration();
 		}
 		
 		this.quantityNumbers = selected;

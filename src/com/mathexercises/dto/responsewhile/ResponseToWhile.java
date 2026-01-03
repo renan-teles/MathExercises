@@ -1,11 +1,11 @@
 package com.mathexercises.dto.responsewhile;
 
 public abstract class ResponseToWhile {
-	public static ResponseWhile exit() {
+	public static ResponseWhile exitLoop() {
 		return new ResponseWhile(true, false);
 	}
 	
-	public static ResponseWhile repeat() {
+	public static ResponseWhile repeatCurrentIteration() {
 		return new ResponseWhile(false, true);
 	}
 	

@@ -35,8 +35,8 @@ public class MainScreen implements Screen{
 			this.showHeader();
 			
 			ResponseWhile res = this.bodyScreen();
-			if(res.repeat()) continue;
-			else if(res.exit()) break;
+			if(res.repeatCurrentIteration()) continue;
+			else if(res.breakLoop()) break;
 		}
 	}
 		
@@ -62,12 +62,12 @@ public class MainScreen implements Screen{
 			"Escolha"
 		);
 		if(userEntry.isEmpty()) {
-			return ResponseToWhile.repeat();
+			return ResponseToWhile.repeatCurrentIteration();
 		}	
 	
 		int selected = userEntry.get();
 		if(selected == 0) {
-			return ResponseToWhile.exit();
+			return ResponseToWhile.exitLoop();
 		}
 		
 		if(!this.childrens.containsKey(selected)) {
@@ -78,7 +78,7 @@ public class MainScreen implements Screen{
 					.append("' inválida. Tente novamente.")
 					.toString()
 			);
-			return ResponseToWhile.repeat();
+			return ResponseToWhile.repeatCurrentIteration();
 		}
 		this.childrens.get(selected).render();
 		

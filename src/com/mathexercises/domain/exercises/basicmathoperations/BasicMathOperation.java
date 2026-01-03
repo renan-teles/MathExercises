@@ -1,12 +1,11 @@
 package com.mathexercises.domain.exercises.basicmathoperations;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import com.mathexercises.domain.exercises.AbstractMathExercise;
 import com.mathexercises.domain.math.operations.Operation;
-import com.mathexercises.dto.responsewhile.*;
-import com.mathexercises.utils.NumberConverter;
+import com.mathexercises.dto.responseexerciselogic.ResponseExerciseLogic;
+import com.mathexercises.dto.responseexerciselogic.ResponseToExerciseLogic;
 
 public abstract class BasicMathOperation extends AbstractMathExercise{
 	protected final Operation operation;
@@ -16,48 +15,35 @@ public abstract class BasicMathOperation extends AbstractMathExercise{
 		String description,
 		Operation operation
 	) {
-		super(name, description);
+		super(name, description, "Resultado");
 		this.operation = operation;
 	}
 	
 	@Override
-	protected ResponseWhile exerciseLogic() {
-		super.expression.defineNumbers(this.difficulty);
-		super.expression.generateExpression(this.operation);
-		
-		this.console.message(this.expression.getExpression());
-
-		Optional<String> userEntry = this.console.inputString(
-			"Resultado"
+	protected final void defineExpression() {
+		this.console.message(
+			super.expression
+				.defineNumbers(this.difficulty)
+				.generateExpression(this.operation)
+				.getExpression()
 		);
-		if(userEntry.isEmpty()) {
-			return ResponseToWhile.repeat();
-		}
-		else if(userEntry.get().equalsIgnoreCase(super.EXIT)) {
-			this.expression.clearExpression();
-			return ResponseToWhile.exit();
-		}
+	}
+	
+	@Override
+	protected final ResponseExerciseLogic<Void> checkIsCorrect(BigDecimal value){
+		boolean isCorrect 
+			= this.expression
+				.calculate(this.operation)
+				.isCorrect(value);
 		
-		Optional<Double> optRes = NumberConverter.parseStringToDouble(
-			userEntry.get()
-		);
-		if(optRes.isEmpty()) {
-			this.console.alert("Valor inválido. Tente novamente.");
-			return ResponseToWhile.repeat();
-		}
-		
-		this.calculateResult();
-		if(!this.expression.isCorrect(BigDecimal.valueOf(optRes.get()))) {
+		if(!isCorrect) {
 			super.console.unsuccess("Você errou. Tente novamente.");
-			return ResponseToWhile.repeat();
+			return ResponseToExerciseLogic.repeatRound();
 		}
 		super.console.success("VOCÊ ACERTOU!");
 		this.expression.clearExpression();
-		
-		return ResponseToWhile.nextIteration();
-	}
-	
-	protected final void calculateResult() {
-		super.expression.calculate(this.operation);
+		return ResponseToExerciseLogic.nextRound();
 	}
 }
+
+

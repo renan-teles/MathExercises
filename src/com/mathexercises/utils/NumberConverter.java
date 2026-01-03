@@ -1,5 +1,6 @@
 package com.mathexercises.utils;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 public abstract class NumberConverter {
@@ -17,6 +18,14 @@ public abstract class NumberConverter {
          } catch (NumberFormatException e) {
              return Optional.empty();
          }
+	 }
+	
+	public static Optional<BigDecimal> parseStringToBigDecimal(String numString) {
+		Optional<Double> opt = NumberConverter.parseStringToDouble(numString);
+		if(opt.isEmpty()) {
+			return Optional.empty();
+		}
+		return Optional.of(BigDecimal.valueOf(opt.get()));
 	 }
 	 
 	 public static Optional<Integer> parseStringToInt(String numString) {
